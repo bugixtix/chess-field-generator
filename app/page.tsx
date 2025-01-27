@@ -1,101 +1,269 @@
+'use client'
 import Image from "next/image";
+import React, {useState, useEffect, useRef} from 'react'
+import {motion, AnimatePresence} from 'framer-motion'
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  
+  const [showComponentA, setShowComponentA] = useState(true)
+  const [readAloud, setReadAloud] = useState(false)
+  const [clickForNextField, setClickForNextField] = useState(false)
+  const [operateWithVoice, setOperateWithVoice] = useState(true)
+  const [showFieldColor, setShowFieldColor] = useState(false)
+  const [fieldCounter, setFieldCounter] = useState(false)
+  
+  const [speakWord, setSpeakWord] = useState(false)
+  const [randomField, setRandomField] = useState('a1')
+  const [transcriptValue, setTranscriptValue] = useState('.')
+  const randomFieldRef = useRef(randomField); 
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const example = "hallo world"
+  const readAloudTxt = "Laut Lesen"
+  const nextFieldOnClickTxt = "Für nächstes Feld klicken"
+  const operateWithVoiceTxt = "Mit Stimme bedienen"
+  const showFieldColorTxt = "Feldfarbe anzeigen"
+  const filedCounterTxt = "Feldzähler"
+  
+  const startTxt = "Starten" 
+  const introductionTxt = "Schachfelder auf dem Brett simulieren"
+
+  // let utterance = new SpeechSynthesisUtterance(example);
+  
+  function GetRandomChessField() {
+    const files = "abcdefgh";
+    const ranks = "12345678";
+    const randomField = files[Math.floor(Math.random() * 8)] + ranks[Math.floor(Math.random() * 8)];
+    return randomField;
+  }
+  function DoSpeakText(text:string){
+
+    let utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'de-DE';
+
+    const voices = speechSynthesis.getVoices();
+    const germanVoice = voices.find(voice => 
+      voice.lang === 'de-DE' && !voice.name.includes('Google')
+    );
+    
+    if (germanVoice) {
+      utterance.voice = germanVoice;
+    }
+    
+    speechSynthesis.speak(utterance)
+  }
+
+  const [isListening, setIsListening] = useState(false);
+
+  const listenForText = (command:string) => {
+    if (!("SpeechRecognition" in window || "webkitSpeechRecognition" in window)) {
+      console.error("Speech Recognition API is not supported in this browser.");
+      return;
+    }
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'de-DE';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+  
+    recognition.onresult = (event:any) => {
+      for(let i = event.resultIndex; i <event.results.length; i++){
+          console.log(event.results[i][0].transcript.trim())
+          DoCheckField(event.results[i][0].transcript.trim())
+      }
+    };
+    recognition.onerror = (err) => {
+      console.error("Speech recognition error:", err);
+    };
+    recognition.onend = () => {
+      console.log("Speech recognition stopped.");
+    };
+    if(command === 'start'){
+      recognition.start();
+    }else if(command === 'stop'){
+      recognition.abort();
+      recognition.stop();
+    }
+  };
+  
+  // Aufruf
+  // listenForText();
+
+  function HandlePlay(){
+    let field = GetRandomChessField()
+    DoSpeakText(field)
+    setRandomField(field)
+  }
+  function DoNextField(){
+    let field = GetRandomChessField()
+    setRandomField(field)
+  }
+  function DoReadField(){
+    DoSpeakText(randomField)
+  }
+  function DoCheckField(text:string){
+    let possibleValues = GetAllPossibleValues()
+    let currentField = randomFieldRef.current;
+    console.log('current Value in docheckfield: ', currentField)
+    possibleValues = possibleValues[currentField]
+    for(let value of possibleValues){
+      if (text === value){
+        console.log("treffer!")
+        let newField = GetRandomChessField()
+        setRandomField(newField)
+        return
+      }
+    }
+  }
+  function DoStartListen(){
+    listenForText('start')
+  }
+  function DoStopListen(){
+    listenForText('stop')
+  }
+  function GetAllPossibleValues(){
+    const rows = ['1', '2', '3', '4', '5', '6', '7', '8'];
+
+    const columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    const phoneticAlphabet = {
+      a: ['anton', 'Ah'],
+      b: ['berta', 'Be'],
+      c: ['caesar', 'z'],
+      d: ['dora','die','der', 'dee'],
+      e: ['emil','emails', 'e mail', 'ä','äh'],
+      f: ['friedrich', 'Ef'],
+      g: ['gustav', 'gehe'],
+      h: ['heinrich', 'Haa']
+    };
+    const phoneticAlphabet1 = {
+      a: ['Anton'],
+      b: ['Berta'],
+      c: ['Caesar','Z'],
+      d: ['Dora','Die','Der'],
+      e: ['Emil','Emails','E mail','Ä','Äh','Äh,'],
+      f: ['Friedrich'],
+      g: ['Gustav','Gehe'],
+      h: ['Heinrich']
+    };
+    const mappings = {}
+
+    for(let column of columns){
+      for(let row of rows){
+        const field = `${column}${row}`;
+        const variations = [
+          field, 
+          `${column} ${row}`,
+          `${column.toUpperCase()}${row}`,
+          `${column.toUpperCase()} ${row}`,
+        ];
+        const phonetics = phoneticAlphabet[column]?.map(
+          (phonetic:string)=>`${phonetic} ${row}`
+        )||[];
+        const phonetics1 = phoneticAlphabet1[column]?.map(
+          (phonetic:string)=>`${phonetic} ${row}.`
+        )||[];
+        mappings[field] = [...variations, ...phonetics, ...phonetics1]
+      }
+    }
+    return mappings
+  }
+  useEffect(() => {
+    randomFieldRef.current = randomField; // Aktualisiere das Ref, wenn randomField sich ändert
+  }, [randomField]);
+  useEffect(() => {
+    function Run(){
+      let field = GetRandomChessField()
+      setRandomField(field)
+      DoSpeakText(field)
+      // DoCheckField()
+    }
+    const chessFieldMapping = GetAllPossibleValues()
+    console.log(chessFieldMapping)
+  
+    return () => {
+      
+    }
+  }, [])
+
+  function HandleStart(){
+    setShowComponentA((p)=>!p)
+  }
+  
+  
+  function HtmlSlider({text_, checked_, setChecked_, index}){
+    let uniqueID = `checkbox${index}`
+    return(
+      <div className='settings--option'>
+            <label className="cursor-pointer" htmlFor={uniqueID} > {text_}</label>
+            <label className="switch" htmlFor={uniqueID}>
+              <input type="checkbox" id={uniqueID} checked={checked_} onChange={()=>{setChecked_((p:boolean)=>!p)}} />
+              <div className="slider round"></div>
+            </label>
+      </div>
+    )
+  }
+
+  function HtmlPlayground(){
+    return(
+      <div className='Playground'>
+        <div className='PlaygroundBody'>
+          <button type="button" className="play--button" onClick={HandlePlay}>Klick mich zum Abspielen</button>
+          <button type="button" className="play--button" onClick={DoNextField} > Nächstes Feld ooo </button>
+          <button type="button" className="play--button" onClick={DoReadField} > Lese Feld ooo </button>
+          <button type="button" className="play--button" onClick={DoStartListen} > Hören Starten ooo </button>
+          <button type="button" className="play--button" onClick={DoStopListen} > Hören Stoppen ooo </button>
+          <p className="display--field">{randomField}</p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+      </div>
+    )
+  }
+  function HtmlSettings(){
+    return(
+      <div className='SettingBody'>
+        <div className='Setting--introduction'>
+          <h3 className='introduction--text'>{introductionTxt}</h3>
+        </div>
+        <div className="Setting--options">
+          <HtmlSlider text_={readAloudTxt} checked_={readAloud} setChecked_={setReadAloud} index={1} />
+          <HtmlSlider text_={nextFieldOnClickTxt} checked_={clickForNextField} setChecked_={setClickForNextField} index={2} />
+          <HtmlSlider text_={operateWithVoiceTxt} checked_={operateWithVoice} setChecked_={setOperateWithVoice} index={3} />
+          <HtmlSlider text_={showFieldColorTxt} checked_={showFieldColor} setChecked_={setShowFieldColor} index={4} />
+          <HtmlSlider text_={filedCounterTxt} checked_={fieldCounter} setChecked_={setFieldCounter} index={5} />
+        </div>
+        <div className="Setting--action">
+          <button type="button" className="action--button" onClick={HandleStart}>{startTxt}</button>
+        </div>
+      </div>
+    )
+  }
+  return (
+    <div className="Home relative overflow-hidden">
+
+    <AnimatePresence mode="wait">
+      {
+        showComponentA ? (
+          <motion.div
+          key="ComponentA"
+          initial={{opacity:0, x:-100}}
+          animate={{opacity:1, x:0}}
+          exit={{opacity:0, x:100}}
+          transition={{duration:0.5}}
+          className={'w-full h-full'}
+          >
+            <HtmlSettings/>
+          </motion.div>
+        ) : 
+        <motion.div
+        key="ComponentB"
+          initial={{opacity:0, x:-100}}
+          animate={{opacity:1, x:0}}
+          exit={{opacity:0, x:100}}
+          transition={{duration:0.5}}
+          className={'w-full h-full'}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <HtmlPlayground/>
+        </motion.div>
+      }
+    </AnimatePresence>
+      
     </div>
   );
 }
