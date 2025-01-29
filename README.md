@@ -13,6 +13,9 @@ Diese Webanwendung hilft beim Lernen der Schachfeld-Koordinaten. Beim Öffnen de
 3. **Sprachausgabe**: Der Name des Feldes wird automatisch durch den Browser laut vorgelesen (mittels Speech Synthesis API).
 4. **Zähler**: Ein Zähler oben auf der Seite zeigt an, wie viele Felder bereits generiert wurden.
 
+![Vorschau Bild02](https://github.com/bugixtix/chess-field-generator/blob/master/public/readme_image02.png)
+![Vorschau Bild01](https://github.com/bugixtix/chess-field-generator/blob/master/public/readme_image01.png)
+
 ### **Anwendungsfall**
 Nutzer setzen sich mit einem realen Schachbrett hin, lassen ein zufälliges Feld generieren und setzen es auf ihrem Schachbrett um. Dann klicken sie für das nächste Feld.
 
