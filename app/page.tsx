@@ -1,5 +1,5 @@
 'use client'
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { HiOutlineSpeakerWave as SpeakerOn} from "react-icons/hi2";
 import { HiOutlineSpeakerXMark as SpeakerOff } from "react-icons/hi2";
 import { LuSquareX as FieldOff } from "react-icons/lu";
@@ -15,7 +15,7 @@ export default function Home() {
   const [fieldCounter, setFieldCounter] = useState(true)
   const [counter, setCounter] = useState(0)
   const [fieldColor, setFieldColor] = useState('white')
-  const [randomField, setRandomField] = useState('a1')
+  const [randomField, setRandomField] = useState('')
   
   // Function Returns Random Chess Field
   function GetRandomChessField() {
@@ -62,7 +62,7 @@ export default function Home() {
   function DoRun(){
     const field = GetRandomChessField()
     setRandomField(field)
-    if(readAloud) DoSpeakText(field)
+    if(readAloud && counter!==0) DoSpeakText(field)
     if(fieldCounter) setCounter((p)=>p=p+1)
     DoFieldColor(field)
   }
@@ -70,6 +70,11 @@ export default function Home() {
   function HandleFieldClick(){
     DoRun()
   }
+
+  useEffect(() => {
+    DoRun()
+  }, [])
+  
 
   return (
     <div className="Home relative overflow-hidden">
