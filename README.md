@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Projekt: Schach-Koordinaten-Generierer
 
-## Getting Started
+### **Technologie**
 
-First, run the development server:
+Next.js, React, JavaScript, Speech Synthesis API
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### **Beschreibung**
+Diese Webanwendung hilft beim Lernen der Schachfeld-Koordinaten. Beim Öffnen der Webseite wird ein zufälliger Name eines Schachfeldes (z. B. "e4") in der Mitte des Bildschirms angezeigt. Der Hintergrund passt sich der Farbe des Feldes (schwarz oder weiß) an. Zusätzlich wird der Name laut vorgelesen.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### **Funktionen**
+1. **Zufällige Feldgenerierung**: Bei jedem Klick oder Tippen auf den Bildschirm wird eine neue Schachfeld-Koordinate generiert.
+2. **Hintergrundfarbe**: Die Hintergrundfarbe der Webseite passt sich an das Feld an (z. B. e4 Weiß, d4 Schwarz).
+3. **Sprachausgabe**: Der Name des Feldes wird automatisch durch den Browser laut vorgelesen (mittels Speech Synthesis API).
+4. **Zähler**: Ein Zähler oben auf der Seite zeigt an, wie viele Felder bereits generiert wurden.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### **Anwendungsfall**
+Nutzer setzen sich mit einem realen Schachbrett hin, lassen ein zufälliges Feld generieren und setzen es auf ihrem Schachbrett um. Dann klicken sie für das nächste Feld.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### **Technische Details**
+- **Next.js** wird für das Frontend und das Server-Side-Rendering genutzt.
+- **React-States** verwalten die aktuelle Koordinate und die Zählerwerte.
+- **Speech Synthesis API** sorgt für die Sprachausgabe.
+- **CSS** und **Tailwind CSS** steuert das UI-Design.
 
-## Learn More
+### **Installation & Nutzung**
+1. Repository klonen:
+   ```
+   git clone https://github.com/bugixtix/chess-field-generator
+   ```
+2. Abhängigkeiten installieren:
+   ```
+   npm install
+   ```
+3. Lokale Entwicklung starten:
+   ```
+   npm run dev
+   ```
+7. Webseite im Browser unter `http://localhost:3000` öffnen.
 
-To learn more about Next.js, take a look at the following resources:
+### **Zukünftige Erweiterungen**
+- Sprachausgabe in Englisch
+- Möglichkeit zur Anpassung der Stimme und Geschwindigkeit der Sprachausgabe.
+- Option zur Wiederholung des letzten Feldes.
+- Nächste 3 kommende Felder zeigen -in kleine Schrift.
+Diese Anwendung ist ein effektives Tool für Schachspieler, um die Koordinaten besser zu verinnerlichen.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### **Beitragen**
+Wir freuen uns über jeden Beitrag zur Verbesserung dieses Projekts! Wenn du eine Idee hast oder eine Änderung vorschlagen möchtest, kannst du gerne einen Pull Request erstellen. Bitte beschreibe in deinem Pull Request kurz, welche Änderung du vorschlägst und warum sie das Projekt verbessert. Vielen Dank für deine Unterstützung!
