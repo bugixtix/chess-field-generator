@@ -16,6 +16,8 @@ export default function Home() {
   const [counter, setCounter] = useState(0)
   const [fieldColor, setFieldColor] = useState('white')
   const [randomField, setRandomField] = useState('')
+  const [isSpeaking, setIsSpeaking] = useState(false)
+  // const [smallScreen, setSmallScreen] = useState(false)
   
   // Function Returns Random Chess Field
   function GetRandomChessField() {
@@ -28,18 +30,19 @@ export default function Home() {
   // Function That Speaks Text (Passes as Parameter) out
   function DoSpeakText(text:string){
 
+    setIsSpeaking(true)
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'de-DE';
 
     const voices = speechSynthesis.getVoices();
-    const germanVoice = voices.find(voice => 
-      voice.lang === 'de-DE' && !voice.name.includes('Google')
-    );
+    const germanVoice = voices.find(voice => voice.lang === 'de-DE' && voice.name.includes('Stefan'));
     
     if (germanVoice) {
       utterance.voice = germanVoice;
     }
-    
+    utterance.onend = () =>{
+      setIsSpeaking(false)
+    }
     speechSynthesis.speak(utterance)
   }
 
@@ -62,7 +65,7 @@ export default function Home() {
   function DoRun(){
     const field = GetRandomChessField()
     setRandomField(field)
-    if(readAloud && counter!==0) DoSpeakText(field)
+    if(readAloud && counter!==0 && !isSpeaking) DoSpeakText(field)
     if(fieldCounter) setCounter((p)=>p=p+1)
     DoFieldColor(field)
   }
@@ -72,7 +75,9 @@ export default function Home() {
   }
 
   useEffect(() => {
+    // if(window.innerWidth < 450) setSmallScreen(true)
     DoRun()
+
   }, [])
   
 
@@ -80,17 +85,21 @@ export default function Home() {
     <div className="Home relative overflow-hidden">
       <div className={`HomeBody`}>
 
-        <div className="counter--section">
+        { fieldCounter && <div className="counter--section">
             <p className={`${fieldCounter ? 'text-gray-700' : 'text-beige'}`}>
               {counter}
             </p>
-        </div>
+        </div>}
+
+        <div className={`pseudo--container ${showFieldColor ? (fieldColor ==='white'?'bg-white':'bg-black') : 'bg-beige'}`}></div>
 
         <div className={`field--section ${showFieldColor ? (fieldColor ==='white'?'bg-white':'bg-black') : 'bg-beige'}`} onClick={()=>{HandleFieldClick()}}>
           <p className={`transition-all duration-600 field--text`}>
             {randomField}
           </p>
         </div>
+
+        <div className={`pseudo--container ${showFieldColor ? (fieldColor ==='white'?'bg-white':'bg-black') : 'bg-beige'}`}></div>
 
         <div className="options--section">
             <button type="button" onClick={()=>{setReadAloud((p:boolean)=>!p)}} className="option--button">{readAloud ? <SpeakerOn/> : <SpeakerOff/>}</button>
