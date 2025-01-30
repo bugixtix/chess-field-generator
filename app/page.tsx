@@ -17,7 +17,7 @@ export default function Home() {
   const [fieldColor, setFieldColor] = useState('white')
   const [randomField, setRandomField] = useState('')
   const [isSpeaking, setIsSpeaking] = useState(false)
-  // const [smallScreen, setSmallScreen] = useState(false)
+  const [smallScreen, setSmallScreen] = useState(false)
   
   // Function Returns Random Chess Field
   function GetRandomChessField() {
@@ -35,7 +35,8 @@ export default function Home() {
     utterance.lang = 'de-DE';
 
     const voices = speechSynthesis.getVoices();
-    const germanVoice = voices.find(voice => voice.lang === 'de-DE' && voice.name.includes('Stefan'));
+    const germanVoice = smallScreen ? voices.find(voice=>voice.lang ==='de-DE') : voices.find(voice => voice.lang === 'de-DE' && voice.name.includes('Stefan'));
+    // const germanVoiceSd 
     
     if (germanVoice) {
       utterance.voice = germanVoice;
@@ -75,7 +76,8 @@ export default function Home() {
   }
 
   useEffect(() => {
-    // if(window.innerWidth < 450) setSmallScreen(true)
+    if(window.innerWidth < 600) setSmallScreen(true)
+    console.log(window.innerWidth)
     DoRun()
 
   }, [])
