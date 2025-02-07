@@ -7,7 +7,10 @@ import { LuSquareCheck as FieldOn } from "react-icons/lu";
 import { GoNumber as CounterOn } from "react-icons/go";
 import { RiNumber0 as CounterOff } from "react-icons/ri";
 
-
+// Todo:
+// Voice sounds creepy on smart phone?
+// Add an array for the coming fields
+// Add "knight option" / different pieces option
 export default function Home() {
   
   const [readAloud, setReadAloud] = useState(true)
